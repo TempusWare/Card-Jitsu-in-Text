@@ -6,35 +6,6 @@
   </head>
   <body>
     <h1>Card-Jitsu in Text</h1>
-    <button type="button" name="button" onclick="toggleBotCards()" id="toggleBotCards">Show Bot Cards</button>
-    <br>
-    <div id="botContainer">
-      <h2>Bot Cards</h2>
-      <table>
-        <tr>
-          <th>Card 1</th>
-          <th>Card 2</th>
-          <th>Card 3</th>
-          <th>Card 4</th>
-          <th>Card 5</th>
-        </tr>
-        <tr id="botElements">
-          <td>one</td>
-          <td>two</td>
-          <td>three</td>
-          <td>four</td>
-          <td>five</td>
-        </tr>
-        <tr id="botPowers">
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-      </table>
-    </div>
-    <br>
     <div id="playerContainer">
       <h2>Player Cards</h2>
       <table>
@@ -59,16 +30,68 @@
           <td></td>
           <td></td>
         </tr>
+        <tr id="playerColours">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
       </table>
     </div>
-    <br>
-    <button type="button" name="button" onclick="chooseCard()">Choose Card</button>
-    <p id="result"></p>
+    <div id="botContainer">
+      <h2>Bot Cards</h2>
+      <table>
+        <tr>
+          <th>Card 1</th>
+          <th>Card 2</th>
+          <th>Card 3</th>
+          <th>Card 4</th>
+          <th>Card 5</th>
+        </tr>
+        <tr id="botElements">
+          <td>one</td>
+          <td>two</td>
+          <td>three</td>
+          <td>four</td>
+          <td>five</td>
+        </tr>
+        <tr id="botPowers">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr id="botColours">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </table>
+    </div>
+    <h2>Choose a card:</h2>
+    <button type="button" name="button" onclick="chooseCard(1)">1</button>
+    <button type="button" name="button" onclick="chooseCard(2)">2</button>
+    <button type="button" name="button" onclick="chooseCard(3)">3</button>
+    <button type="button" name="button" onclick="chooseCard(4)">4</button>
+    <button type="button" name="button" onclick="chooseCard(5)">5</button>
     <p id="playersCard"></p>
     <p id="botsCard"></p>
+    <p id="result"></p>
+    <h2>Player's Collection:</h2>
+    <p id="playerCollection">No cards won yet</p>
+    <h2>Bot's Collection:</h2>
+    <p id="botCollection">No cards won yet</p>
+    <h2>Winner Winner Chicken Dinner</h2>
+    <p id="winner">No winner yet</p>
+    <button type="button" name="button" onclick="toggleBotCards()" id="toggleBotCards">Show Bot Cards</button>
   </body>
 </html>
 <script type="text/javascript">
+
   function createCard(type) {
     return type[Math.floor(Math.random() * type.length)];
   };
@@ -76,20 +99,75 @@
     return Math.floor((Math.random() * 12) + 1)
   };
 
-  //var cardElements = ["💦", "🔥", "❄️"];
-  var cardElements = ["Water", "Fire", "Snow"];
+  var cardElements = ["💦", "🔥", "❄️"];
+  //var cardElements = ["Water", "Fire", "Snow"];
+  var cardColours = ["💛", "🧡", "❤️", "💜", "💙", "💚"]
+  //var cardColours = ["Yellow", "Orange", "Red", "Purple", "Blue", "Green"];
 
-  function elementBattle(playerElement, botElement, playerPower, botPower) {
+  var playerCollection = document.getElementById("playerCollection");
+  var botCollection = document.getElementById("botCollection");
+  var winnerResult = document.getElementById("winner");
+
+  var playerCollectionElements = [];
+  var playerCollectionColours = [];
+
+  var botCollectionElements = [];
+  var botCollectionColours = [];
+
+  var playerElementsWon = {water: false, fire: false, snow: false};
+  var botElementsWon = {water: false, fire: false, snow: false};
+
+  function checkForWinner(cardElement, winnerCollection, winner, cardColour) {
+    // Check if the player/bot has all three elements
+    for (var i = 0; i < cardElement.length; i++) {
+      if (cardElement[i] === cardElements[0]) {winnerCollection.water = true};
+      if (cardElement[i] === cardElements[1]) {winnerCollection.fire = true};
+      if (cardElement[i] === cardElements[2]) {winnerCollection.snow = true};
+    };
+
+    // Check if there are repeated colours
+
+    /*var coloursDifferent;
+    while (!coloursDifferent) {
+
+    }*/
+
+    if (winnerCollection.water && winnerCollection.fire && winnerCollection.snow) {
+      //winnerResult.innerHTML = winner;
+      //alert("WINNER: " + winner)
+      setTimeout(function() {alert("WINNER: " + winner)}, 125);
+    }
+  };
+
+  function botWon(botElement, botColour) {
+    botCollectionElements.push(botElement);
+    botCollectionColours.push(botColour);
+    botCollection.innerHTML = botCollectionElements + "<br>" + botCollectionColours;
+    botHasWin = true;
+    checkForWinner(botCollectionElements, botElementsWon, "BOT", botCollectionColours);
+  };
+  function playerWon(playerElement, playerColour) {
+    playerCollectionElements.push(playerElement);
+    playerCollectionColours.push(playerColour);
+    playerCollection.innerHTML = playerCollectionElements + "<br>" + playerCollectionColours;
+    checkForWinner(playerCollectionElements, playerElementsWon, "PLAYER", playerCollectionColours);
+  };
+
+  function elementBattle(playerElement, botElement, playerPower, botPower, playerColour, botColour) {
     // If playerElement = Water
     if (playerElement === cardElements[0]) {
       if (botElement === cardElements[2]) {
+        botWon(botElement, botColour);
         return "LOSE: Snow beats water.";
       } else if (botElement === cardElements[1]) {
+        playerWon(playerElement, playerColour);
         return "WIN: Water beats fire.";
       } else {
         if (playerPower < botPower) {
+          botWon(botElement, botColour);
           return "LOSE: Opponent card had greater power."
         } else if (playerPower > botPower) {
+          playerWon(playerElement, playerColour);
           return "WIN: Player card had greater power."
         } else {
           return "TIE: Opponent card and player card had same element and power."
@@ -100,13 +178,17 @@
     // If playerElement = Fire
     if (playerElement === cardElements[1]) {
       if (botElement === cardElements[0]) {
+        botWon(botElement, botColour);
         return "LOSE: Water beats fire.";
       } else if (botElement === cardElements[2]) {
+        playerWon(playerElement, playerColour);
         return "WIN: Fire beats snow.";
       } else {
         if (playerPower < botPower) {
+          botWon(botElement, botColour);
           return "LOSE: Opponent card had greater power."
         } else if (playerPower > botPower) {
+          playerWon(playerElement, playerColour);
           return "WIN: Player card had greater power."
         } else {
           return "TIE: Opponent card and player card had same element and power."
@@ -117,13 +199,17 @@
     // If playerElement = Snow
     if (playerElement === cardElements[2]) {
       if (botElement === cardElements[1]) {
+        botWon(botElement, botColour);
         return "LOSE: Fire beats snow.";
       } else if (botElement === cardElements[0]) {
+        playerWon(playerElement, playerColour);
         return "WIN: Snow beats water.";
       } else {
         if (playerPower < botPower) {
+          botWon(botElement, botColour);
           return "LOSE: Opponent card had greater power."
         } else if (playerPower > botPower) {
+          playerWon(playerElement, playerColour);
           return "WIN: Player card had greater power."
         } else {
           return "TIE: Opponent card and player card had same element and power."
@@ -134,55 +220,81 @@
 
   var botCardsElements = [createCard(cardElements), createCard(cardElements), createCard(cardElements), createCard(cardElements), createCard(cardElements)];
   var botCardsPowers = [cardPower(), cardPower(), cardPower(), cardPower(), cardPower()];
+  var botCardsColours = [createCard(cardColours), createCard(cardColours), createCard(cardColours), createCard(cardColours), createCard(cardColours)];
   var playerCardsElements = [createCard(cardElements), createCard(cardElements), createCard(cardElements), createCard(cardElements), createCard(cardElements)];
   var playerCardsPowers = [cardPower(), cardPower(), cardPower(), cardPower(), cardPower()];
+  var playerCardsColours = [createCard(cardColours), createCard(cardColours), createCard(cardColours), createCard(cardColours), createCard(cardColours)];
 
-  for (var i = 0; i < 5; i++) {
-    document.getElementById("botElements").children[i].innerHTML = botCardsElements[i];
-    document.getElementById("botPowers").children[i].innerHTML = botCardsPowers[i];
-    document.getElementById("playerElements").children[i].innerHTML = playerCardsElements[i];
-    document.getElementById("playerPowers").children[i].innerHTML = playerCardsPowers[i];
+  function updateTable() {
+    for (var i = 0; i < 5; i++) {
+      document.getElementById("botElements").children[i].innerHTML = botCardsElements[i];
+      document.getElementById("botPowers").children[i].innerHTML = botCardsPowers[i];
+      document.getElementById("botColours").children[i].innerHTML = botCardsColours[i];
+      document.getElementById("playerElements").children[i].innerHTML = playerCardsElements[i];
+      document.getElementById("playerPowers").children[i].innerHTML = playerCardsPowers[i];
+      document.getElementById("playerColours").children[i].innerHTML = playerCardsColours[i];
+    }
+  };
+
+  location.onload = updateTable();
+
+  var botHasWin = false;
+
+  function chooseCard(cardChosen) {
+    var botChosen = botChoiceAlgorithm();
+    document.getElementById("result").innerHTML = elementBattle(playerCardsElements[cardChosen - 1], botCardsElements[botChosen], playerCardsPowers[cardChosen - 1], botCardsPowers[botChosen], playerCardsColours[cardChosen - 1], botCardsColours[botChosen]);
+    document.getElementById("playersCard").innerHTML = "Player's card: " + playerCardsElements[cardChosen - 1] + " " + playerCardsPowers[cardChosen - 1] + " " + playerCardsColours[cardChosen - 1];
+    document.getElementById("botsCard").innerHTML = "Bot's card: " + botCardsElements[botChosen] + " " + botCardsPowers[botChosen] + " " + botCardsColours[botChosen];
+    newCard(cardChosen, botChosen);
   }
 
-  function chooseCard() {
-    var playerCardChosen = prompt("Enter your chosen card's number:");
-    var botChosen = Math.floor(Math.random() * 5)
-    switch (playerCardChosen) {
-      case "1":
-        document.getElementById("result").innerHTML = elementBattle(playerCardsElements[0], botCardsElements[botChosen], playerCardsPowers[0], botCardsPowers[botChosen]);
-        document.getElementById("playersCard").innerHTML = "Player's card: " + playerCardsElements[0] + " " + playerCardsPowers[0];
-        break;
-      case "2":
-        document.getElementById("result").innerHTML = elementBattle(playerCardsElements[1], botCardsElements[botChosen], playerCardsPowers[1], botCardsPowers[botChosen]);
-        document.getElementById("playersCard").innerHTML = "Player's card: " + playerCardsElements[1] + " " + playerCardsPowers[1];
-        break;
-      case "3":
-        document.getElementById("result").innerHTML = elementBattle(playerCardsElements[2], botCardsElements[botChosen], playerCardsPowers[2], botCardsPowers[botChosen]);
-        document.getElementById("playersCard").innerHTML = "Player's card: " + playerCardsElements[2] + " " + playerCardsPowers[2];
-        break;
-      case "4":
-        document.getElementById("result").innerHTML = elementBattle(playerCardsElements[3], botCardsElements[botChosen], playerCardsPowers[3], botCardsPowers[botChosen]);
-        document.getElementById("playersCard").innerHTML = "Player's card: " + playerCardsElements[3] + " " + playerCardsPowers[3];
-        break;
-      case "5":
-        document.getElementById("result").innerHTML = elementBattle(playerCardsElements[4], botCardsElements[botChosen], playerCardsPowers[4], botCardsPowers[botChosen]);
-        document.getElementById("playersCard").innerHTML = "Player's card: " + playerCardsElements[4] + " " + playerCardsPowers[4];
-        break;
-      default:
-        document.getElementById("result").innerHTML = "That's not a card you have."
-    }
-    document.getElementById("botsCard").innerHTML = "Bot's card: " + botCardsElements[botChosen] + " " + botCardsPowers[botChosen];
+  function botChoiceAlgorithm() {
+    if (botHasWin) {
+      // If bot has not collected a water card
+      if (!botElementsWon.water) {
+        // Check for water card
+        if (botCardsElements.indexOf(cardElements[0]) > -1) {return botCardsElements.indexOf(cardElements[0])}
+        // If no water card, return random card
+        else {return Math.floor(Math.random() * 5)}
+
+        // If bot has not collected a fire card
+      } else if (!botElementsWon.fire) {
+        // Check for fire card
+        if (botCardsElements.indexOf(cardElements[1]) > -1) {return botCardsElements.indexOf(cardElements[1])}
+        // If no fire card, return random card
+        else {return Math.floor(Math.random() * 5)}
+
+        // If bot has not collected a snow card
+      } else if (!botElementsWon.snow) {
+        // Check for snow card
+        if (botCardsElements.indexOf(cardElements[2]) > -1) {return botCardsElements.indexOf(cardElements[2])}
+        // If no snow card, return random card
+        else {return Math.floor(Math.random() * 5)}
+
+      } else {alert("keep looking")};
+    } else /* If the bot has not collected a card */ {return Math.floor(Math.random() * 5)}
+  }
+
+  function newCard(cardChosen, botChosen) {
+    playerCardsElements[cardChosen - 1] = createCard(cardElements);
+    playerCardsPowers[cardChosen - 1] = cardPower();
+    playerCardsColours[cardChosen - 1] = createCard(cardColours);
+
+    botCardsElements[botChosen] = createCard(cardElements);
+    botCardsPowers[botChosen] = cardPower();
+    botCardsColours[botChosen] = createCard(cardColours);
+    updateTable()
   }
 
   var botContainer = document.getElementById("botContainer");
   botContainer.style.display = "none";
   function toggleBotCards() {
     if (botContainer.style.display === "none") {
-      var confirmReveal = confirm("Press OK if you're sure you want to reveal the bot's codes and render the rest of the game basically pointless cause you'll know whether your cards will beat the bot's cards.")
+      var confirmReveal = confirm("Press OK to reveal bot cards.")
       if (confirmReveal == true) {
-        botContainer.style.display = "inline-block"
+        botContainer.style.display = "inline-block";
+        document.getElementById("toggleBotCards").innerHTML = "Hide Bot Codes"
       }
-      document.getElementById("toggleBotCards").innerHTML = "Hide Bot Codes"
     } else {
       botContainer.style.display = "none";
       document.getElementById("toggleBotCards").innerHTML = "Show Bot Codes"
