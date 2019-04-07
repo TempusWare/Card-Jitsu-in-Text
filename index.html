@@ -103,6 +103,7 @@
   //var cardElements = ["Water", "Fire", "Snow"];
   var cardColours = ["💛", "🧡", "❤️", "💜", "💙", "💚"]
   //var cardColours = ["Yellow", "Orange", "Red", "Purple", "Blue", "Green"];
+  //var cardColours = ["💛<br>Yellow", "🧡<br>Orange", "❤️<br>Red", "💜<br>Purple", "💙<br>Blue", "💚<br>Green"];
 
   var playerCollection = document.getElementById("playerCollection");
   var botCollection = document.getElementById("botCollection");
@@ -124,18 +125,17 @@
       if (cardElement[i] === cardElements[1]) {winnerCollection.fire = true};
       if (cardElement[i] === cardElements[2]) {winnerCollection.snow = true};
     };
-
-    // Check if there are repeated colours
-
-    /*var coloursDifferent;
-    while (!coloursDifferent) {
-
-    }*/
-
     if (winnerCollection.water && winnerCollection.fire && winnerCollection.snow) {
-      //winnerResult.innerHTML = winner;
-      //alert("WINNER: " + winner)
-      setTimeout(function() {alert("WINNER: " + winner)}, 125);
+      var cardWater = cardColour[cardElement.indexOf(cardElements[0])];
+      var cardFire = cardColour[cardElement.indexOf(cardElements[1])];
+      var cardSnow = cardColour[cardElement.indexOf(cardElements[2])];
+      // Proceed if all winning cards have different elements
+      if (cardWater != cardFire && cardWater != cardSnow && cardFire != cardSnow) {
+        //setTimeout(function() {alert("same colour")}, 125);
+        setTimeout(function() {alert("WINNER: " + winner)}, 125);
+      } else {
+        setTimeout(function() {alert(winner + " has collected all elements but has duplicate colours")}, 125);
+      }
     }
   };
 
